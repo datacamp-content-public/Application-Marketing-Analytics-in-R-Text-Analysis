@@ -7,7 +7,7 @@ description: 'This is a template chapter.'
 
 ```yaml
 type: NormalExercise
-key: c685640596
+key: 827e41f5ce
 lang: r
 xp: 100
 skills: 1
@@ -58,3 +58,16 @@ The Instructions that follow should be in bullet point form with clear guidance 
 # Update this to something more informative.
 success_msg("Some praise! Then reinforce a learning objective from the exercise.")
 ```
+
+---
+
+## Modeling Text
+
+```yaml
+type: VideoExercise
+key: c8a436c4eb
+xp: 50
+```
+
+`@projector_key`
+cc30cbf2c09acb54b3a8a5ad506e3f36
