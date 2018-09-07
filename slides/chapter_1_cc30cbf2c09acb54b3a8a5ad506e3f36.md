@@ -69,17 +69,71 @@ key: "cdffc2d578"
 
 
 `@part2`
-``dtm_text <- tidy_text %>%
-     anti_join(stop_words) %>%
-     count(word, talk) %>%
-     cast_dtm(talk, word, n)
-``
+```
+dtm_text <- tidy_text %>%
+   count(word, document) %>%
+   cast_dtm(document, word, n)
+```
 
 
 `@script`
 But enough of that – let’s actually run a topic model! We will be using the topicmodels package and the most commonly used topic model: latent Dirichlet allocation or LDA. Our first challenge is the input for a topic model is a document term matrix or DTM. In a DTM, each row is a document with a count of the occurrences of each term as columns.
 
 We shouldn’t be surprised that the tidytext package again comes to the rescue! Taking our product review data in a tidy text format, we can compute word frequencies by document and use the cast_dtm() function to easily create a DTM.
+
+
+---
+## Run a Topic Model
+
+```yaml
+type: "FullCodeSlide"
+key: "3a32c0c18c"
+```
+
+`@part1`
+```
+lda_out <- dtm_text %>%
+   LDA(
+      k = 2,
+      control = list(seed = 42)
+   )
+```
+
+
+`@script`
+Now that we have a DTM as an input, running a topic model is straightforward. We use the LDA() function, specifying the number of topics we want to produce and the seed to help in our recovery of the same topics given the probabilistic nature of model estimation.
+
+
+---
+## Topic Word Probabilities
+
+```yaml
+type: "TwoRows"
+key: "acaf735862"
+```
+
+`@part1`
+- Each topic is the dictionary of words, sorted according to the probability each word is part of that topic.
+- Let’s “tidy” these probabilities (i.e., betas).
+
+
+`@part2`
+```
+lda_out %>%
+   tidy(matrix = "beta") %>%
+   group_by(topic) %>%
+   top_n(15, beta) %>%
+   ungroup() %>%
+   mutate(term = reorder(term, beta)) %>%
+   ggplot(aes(term, beta, fill = as.factor(topic))) +
+   geom_col(show.legend = FALSE) +
+   facet_wrap(~ topic, scales = "free") +
+   coord_flip()
+```
+
+
+`@script`
+The most important output from a topic model are the topics themselves: the dictionary of all words in the corpus sorted according to the probability the word is part of that topic. However, the output from the LDA() function is not tidy. Once again, we can use a tidytext function, in this case tidy(), to take the matrix of topic probabilities and put them into a form that is easily visualized using ggplot2.
 
 
 ---
@@ -91,5 +145,7 @@ key: "672ef88d0b"
 ```
 
 `@script`
+How do we know 2 topics is enough? How do we even interpret these topics? We’ll return to these issues of how to determine the number of topics and interpret the topics themselves.
 
+For now, it’s your turn to run your first topic model!
 
