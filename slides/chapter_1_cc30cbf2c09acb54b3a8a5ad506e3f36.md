@@ -32,7 +32,7 @@ key: "920d6619dc"
 
 `@part1`
 Clustering
-- Clusters are uncovered based on distance, which is continuous.
+- {{1}} Clusters are uncovered based on distance, which is continuous.
 - Every object is assigned to a single cluster.
 - Clusters are summarized based on averages.
 
