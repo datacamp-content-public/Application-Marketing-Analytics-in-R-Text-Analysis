@@ -223,7 +223,7 @@ key: "672ef88d0b"
 ```
 
 `@script`
-How do we know 2 topics is enough? How do we even interpret these topics? We’ll return to these issues of how to determine the number of topics and interpret the topics themselves.
+How do we know 2 topics is enough? How do we even interpret these topics We’ll return to these issues of how to determine the number of topics and interpret the topics themselves.
 
 For now, it’s your turn to run your first topic model!
 
