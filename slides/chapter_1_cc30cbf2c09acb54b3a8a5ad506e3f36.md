@@ -17,7 +17,7 @@ title: Marketing Professor
 
 
 `@script`
-So far in this course, you have learned how to wrangle and visualize text. In particular, you’ve applied a tidy, bag-of-words approach to text analysis using the tidytext package. You’ve seen how the tidy text format of a long data frame with a single token per row has facilitated your use of dplyr, ggplot2, and other tidyverse packages to effectively wrangle and visualize text.
+So far in this course, you have learned how to wrangle and visualize text. In particular, you’ve applied a tidy, bag-of-words approach to text analysis using the tidytext package. You’ve seen how the tidy text format of a long data frame with a single token per row has facilitated your use of dplyr, ggplot2, and other tidyverse packages to effectively wrangle and visualize text. You’ve applied these techniques to more than 24,000 reviews of a robotic vacuum.
 
 
 ---
@@ -37,7 +37,7 @@ key: "8f869c1a4b"
 
 
 `@script`
-However, we often want to do more than just compute and visualize word frequencies. One of the most useful modeling approaches for text is topic modeling. While word frequencies suggest overall meaning, topic modeling is used to uncover the themes or topics being written about within a corpus. Identifying topics within a corpus is especially useful as the number of documents increases and any qualitative assessment of content becomes impractical.
+However, we often want to do more than just compute and visualize word frequencies. One of the most useful modeling approaches for text is topic modeling. While word frequencies suggest overall meaning, topic modeling is used to uncover the themes or topics being written about within a corpus. Identifying topics within a corpus is especially useful as the number of documents increases and any qualitative assessment of content becomes impractical. We’ll use topic modeling to uncover the concerns with and drivers of satisfaction for a robotic vacuum.
 
 
 ---
@@ -51,25 +51,21 @@ key: "920d6619dc"
 `@part1`
 **Clustering**{{1}}
 - Clusters are uncovered based on distance, which is continuous.{{2}}
-- Every object is assigned to **a** single cluster.{{3}}
-- Clusters are summarized based on averages.{{4}}
+- Every object is assigned to a single cluster.{{3}}
 
 
 `@part2`
-**Topic Modeling**{{5}}
-- Topics are uncovered based on word frequency, which is discrete.{{6}}
-- Every document is a mixture (i.e., partial member) of every topic.{{7}}
-- Topics are summarized based on word probabilities.{{8}}
+**Topic Modeling**{{4}}
+- Topics are uncovered based on word frequency, which is discrete.{{5}}
+- Every document is a mixture (i.e., partial member) of every topic.{{6}}
 
 
 `@script`
 Because topic models uncover topics or groups of words that occur together, they are often confused with other unsupervised learning techniques, clustering in particular. It’s worth taking a moment to distinguish these two techniques.
 
-Common clustering techniques like k-means and hierarchical clustering are identified based on distance between objects, which is an inherently continuous measure. Furthermore, each object being clustered is assigned to a single cluster. Finally, clusters are often summarized based on averages, which is another continuous measure.
+Common clustering techniques like k-means and hierarchical clustering are identified based on distance between objects, which is an inherently continuous measure. Furthermore, each object being clustered is assigned to a single cluster.
 
-Topic models identify topics based on word frequency, which is an inherently discrete measure. Furthermore, each object (in this case, a document within a corpus) is a mixture or partial member of every topic. Finally, topics are often summarized based on word probabilities.
-
-To be clear, a topic model is the appropriate tool for modeling text based on the discrete nature of text and the more realistic property of characterizing every document as a mixture of topics.
+Topic models identify topics based on word frequency, which is an inherently discrete measure. Furthermore, each object (in this case, a document within a corpus) is a mixture or partial member of every topic.
 
 
 ---
@@ -77,13 +73,12 @@ To be clear, a topic model is the appropriate tool for modeling text based on th
 
 ```yaml
 type: "TwoRows"
-key: "cdffc2d578"
+key: "f67f45dbf3"
 ```
 
 `@part1`
-- Let's use the most common topic model: latent Dirichlet allocation (LDA).
-- The input for a topic model is not tidy data, it’s a document term matrix (DTM).
-- Let’s “cast” our tidy data into a DTM.
+- Latent Dirichlet allocation (LDA) is the most commonly used topic model.{{1}}
+- The input is a document term matrix (DTM), where each row is a document and each column is a count of the occurrences of each term.{{2}}
 
 
 `@part2`
@@ -91,7 +86,8 @@ key: "cdffc2d578"
 dtm_text <- tidy_text %>%
    count(word, document) %>%
    cast_dtm(document, word, n)
-
+```{{3}}
+```
 dtm_text
 
 <<DocumentTermMatrix (documents: 24243, terms: 4817)>>
@@ -99,13 +95,13 @@ Non-/sparse entries: 24243/116754288
 Sparsity           : 100%
 Maximal term length: NA
 Weighting          : term frequency (tf)
-```
+```{{4}}
 
 
 `@script`
 But enough of that – let’s actually run a topic model! We will be using the topicmodels package and the most commonly used topic model: latent Dirichlet allocation or LDA. Our first challenge is the input for a topic model is a document term matrix or DTM. In a DTM, each row is a document with a count of the occurrences of each term as columns.
 
-We shouldn’t be surprised that the tidytext package again comes to the rescue! Taking our product review data in a tidy text format, we can compute word frequencies by document and use the cast_dtm() function to easily create a DTM.
+We shouldn’t be surprised that the tidytext package again comes to the rescue! Taking our product review data in a tidy text format, we can compute word frequencies by document and use the cast_dtm() function to easily create a DTM. The DTM is an R object specially encoded by the topicmodels package.
 
 
 ---
@@ -123,15 +119,16 @@ lda_out <- dtm_text %>%
       k = 2,
       control = list(seed = 42)
    )
-
+```{{1}}
+```
 lda_out
 
 A LDA_Gibbs topic model with 2 topics.
-```
+```{{2}}
 
 
 `@script`
-Now that we have a DTM as an input, running a topic model is straightforward. We use the LDA() function, specifying the number of topics we want to produce and the seed to help in our recovery of the same topics given the probabilistic nature of model estimation.
+Now that we have a DTM as an input, running a topic model is straightforward. We use the LDA() function, specifying the number of topics we want to produce and the seed to help in our recovery of the same topics given the probabilistic nature of model estimation.  The output is, again, a specially encoded R object.
 
 
 ---
@@ -146,7 +143,8 @@ key: "acaf735862"
 ```
 lda_topics <- lda_out %>% 
   tidy(matrix = "beta")
-
+```{{1}}
+```
 lda_topics %>% 
   arrange(desc(beta))
 
@@ -164,7 +162,7 @@ lda_topics %>%
  9     2 floor    0.0164
 10     2 vacuum   0.0147
 # ... with 9,624 more rows
-```
+```{{2}}
 
 
 `@part2`
@@ -205,15 +203,15 @@ lda_topics %>%
     scales = "free"
   ) +
   coord_flip()
-```
+```{{1}}
 
 
 `@part2`
-![](https://assets.datacamp.com/production/repositories/3536/datasets/85842f8b40c707cac54318aef1328de90c5d442c/topics.pdf)
+![](https://assets.datacamp.com/production/repositories/3536/datasets/85842f8b40c707cac54318aef1328de90c5d442c/topics.pdf){{2}}
 
 
 `@script`
-
+This is the same code we used to plot word frequencies, only this time we plot topic word probabilities, grouped and faceted by topic.
 
 
 ---
